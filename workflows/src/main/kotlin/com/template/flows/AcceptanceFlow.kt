@@ -20,7 +20,7 @@ class AcceptanceFlow{
     class Initiator(val proposalId: UniqueIdentifier) : FlowLogic<Unit>() {
         override val progressTracker = ProgressTracker()
 
-
+        @Suspendable
         override fun call() {
             //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 

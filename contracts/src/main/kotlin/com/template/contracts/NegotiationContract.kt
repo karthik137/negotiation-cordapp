@@ -73,6 +73,22 @@ class NegotiationContract : Contract {
             }
 
             is Commands.Modify -> requireThat {
+                "There is exactly one input" using (tx.inputStates.size == 1)
+                "The single input is of type ProposalState" using (tx.inputsOfType<ProposalState>().size == 1)
+                "There is exactly one output" using (tx.outputStates.size == 1)
+                "The single output is of type ProposalState" using (tx.outputsOfType<ProposalState>().size == 1)
+                "There is exactly one command" using (tx.commands.size == 1)
+                "There is no timestamp" using (tx.timeWindow == null)
+
+                val output = tx.outputsOfType<ProposalState>().single()
+                val input = tx.inputsOfType<ProposalState>().single()
+
+                "The amount is modified in the output" using (output.amount != input.amount)
+                "The buyer is unmodified in the output" using (input.buyer == output.buyer)
+                "The seller is unmodified in the output" using (input.seller == output.seller)
+
+                "The proposer is a required signer" using (cmd.signers.contains(output.proposer.owningKey))
+                "The proposee is a required signer" using (cmd.signers.contains(output.proposee.owningKey))
 
             }
         }
