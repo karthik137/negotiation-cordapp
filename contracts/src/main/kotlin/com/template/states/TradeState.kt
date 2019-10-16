@@ -12,12 +12,8 @@ import net.corda.core.identity.Party
 data class TradeState(
         val amount: Int,
         val buyer: Party,
-        val seller: Party
+        val seller: Party, override val linearId: UniqueIdentifier
 ): LinearState{
-    override val linearId: UniqueIdentifier
-        get(){
-            return UniqueIdentifier();
-        }
     override val participants: List<AbstractParty>
         get() {
             return listOf(buyer, seller);

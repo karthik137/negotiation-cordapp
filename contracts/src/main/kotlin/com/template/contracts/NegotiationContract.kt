@@ -1,6 +1,7 @@
 package com.template.contracts
 
 import com.template.states.ProposalState
+import com.template.states.TradeState
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.requireSingleCommand
@@ -51,8 +52,24 @@ class NegotiationContract : Contract {
             }
 
             is Commands.Accept -> requireThat {
+                "There is exactly one input " using (tx.inputStates.size == 1)
+                "The single input is of type ProposalState" using (tx.inputsOfType<ProposalState>().size == 1)
+                "There is exactly one output" using (tx.outputStates.size == 1)
+                "The single output is of type TradeState" using (tx.outputsOfType<TradeState>().size == 1)
+                "There is exactly one command" using (tx.commands.size == 1)
+                "There is no timestamp" using (tx.timeWindow == null)
 
+                // check input and output values
+                val input = tx.inputsOfType<ProposalState>().single()
+                val output = tx.outputsOfType<TradeState>().single()
 
+                "The amount is unmodified in the output" using (input.amount == output.amount)
+                "The buyer is unmodified" using (input.buyer == output.buyer)
+                "The seller is unmodified in the output" using (input.seller == output.seller)
+
+                //Check required signers
+                "The proposer is a required signer" using (cmd.signers.contains(input.proposer.owningKey))
+                "The proposee is a required signer" using (cmd.signers.contains(input.proposee.owningKey))
             }
 
             is Commands.Modify -> requireThat {

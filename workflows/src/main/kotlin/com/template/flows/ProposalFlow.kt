@@ -76,6 +76,5 @@ class ProposalFlow  {
             val txId = subFlow(signedTransactionFlow).id
             subFlow(ReceiveFinalityFlow(counterPartySession, txId))
         }
-
     }
 }
